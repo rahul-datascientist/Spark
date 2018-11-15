@@ -1,0 +1,30 @@
+﻿Sample Word Count
+
+A] Create a file called sample in /home/notroot/lab/data folder and copy the same in HDFS via the –copyFromLocal statement.
+
+B] This is the word count logic in DF.
+
+val df = sqlContext.read.text("/input/sample")
+df.show(10,truncate=false)
+
+Next split each of the line in to words using the split function. This will create a new DataFrame with words column, each words column would have array of words for that line.
+
+val wordsDF = df.select(split(df("value")," ").alias("words")) 
+Note here the value is the default column name.
+
+wordsDF.show(10,truncate=false)
+
+Next use explode transformation to convert the words array in to a data frame with word as the column name. This is like the FlatMap() method on RDD
+
+val wordDF = wordsDF.select(explode(wordsDF("words")).alias("word"))
+wordDF.show(10,truncate=false)
+
+Next you have the DF with each line containing singe word in the file. So group the Data Frame based on word and count the occurrence of each word
+
+val wordCountDF = wordDF.groupBy("word").count
+wordCountDF.show(truncate=false)
+
+This is to find out the top 20 top most words in the file
+wordCountDF.orderBy(desc("count")).show(truncate=false)
+
+

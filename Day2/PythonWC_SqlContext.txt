@@ -1,0 +1,15 @@
+import pyspark.sql.functions as func
+df = sqlContext.read.text("/input/sample")
+df.show()
+
+wordsDF = df.select(func.split('value', " ").alias('words'))
+wordsDF.show()
+
+wordDF = wordsDF.select(func.explode('words').alias('word'))
+wordDF.show()
+
+wordCountDF = wordDF.groupBy('word').count()
+wordCountDF.show()
+
+wordCountDF.orderBy('count',ascending=False).show()
+

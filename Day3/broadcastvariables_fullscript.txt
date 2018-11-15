@@ -1,0 +1,61 @@
+val departments = sc.textFile("/input/retail_db/departments")
+val categories = sc.textFile("/input/retail_db/categories")
+val products = sc.textFile("/input/retail_db/products")
+	
+val departmentsMap = departments.map(rec => (rec.split(",")(0).toInt, rec.split(",")(1))) 
+
+
+val categoriesMap = categories.map(rec => (rec.split(",")(0).toInt, rec.split(",")(1).toInt))
+
+
+val productsMap = products.map(rec => (rec.split(",")(1).toInt, rec.split(",")(0).toInt))
+
+departmentsMap.take(2)
+
+categoriesMap.take(2)
+
+productsMap.take(2)
+
+val productCategories = productsMap.join(categoriesMap)
+
+
+productCategories.take(2)
+
+
+val productCategoriesMap = productCategories.map(rec => (rec._2._2, rec._2._1)) 
+
+productCategoriesMap.take(2)
+
+val productDepartments = productCategoriesMap.join(departmentsMap)
+
+
+productDepartments.take(2)
+
+val productDepartmentsMap = productDepartments.map(rec => (rec._2._1, rec._2._2)).distinct
+
+productDepartmentsMap.take(2)
+
+val bv = sc.broadcast(productDepartmentsMap.collectAsMap())
+
+val orders = sc.textFile("/input/retail_db/orders")
+val orderItems = sc.textFile("/input/retail_db/order_items")
+
+val ordersCompleted = orders.filter(rec => (rec.split(",")(3) == "COMPLETE")).map(rec => (rec.split(",")(0).toInt, rec.split(",")(1)))
+
+ordersCompleted.take(2)
+
+val orderItemsMap = orderItems.map(rec => (rec.split(",")(1).toInt, (bv.value.get(rec.split(",")(2).toInt).get, rec.split(",")(4).toFloat)))
+
+val ordersJoin = ordersCompleted.join(orderItemsMap)
+
+ordersJoin.take(2)
+
+val revenuePerDayPerDepartment = ordersJoin.map(rec => ((rec._2._1, rec._2._2._1), rec._2._2._2))
+
+revenuePerDayPerDepartment.take(2)
+
+val indrevenue = revenuePerDayPerDepartment.reduceByKey((acc, value) => acc + value)
+
+indrevenue.sortByKey().take(10).foreach(println)
+
+

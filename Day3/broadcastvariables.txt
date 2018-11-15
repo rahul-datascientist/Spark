@@ -1,0 +1,109 @@
+https://spark.apache.org/docs/1.6.2/programming-guide.html#broadcast-variables
+ 
+Get total revenue per department for each day
+
+Department name is in departments
+To get department name we need to join these tables
+
+    order_items
+    products
+    categories
+    departments
+
+We will first join products, categories and departments
+
+    get product_id and department_name
+    broadcast data which contain product_id and department_name
+
+Then join orders and order_items
+
+    Perform simple join between orders and order_items
+    As part of join look up into hashmap with product_id to get department_name
+
+Use reduceByKey to compute revenue for each date and department 
+ 
+val departments = sc.textFile("/input/retail_db/departments")
+val categories = sc.textFile("/input/retail_db/categories")
+val products = sc.textFile("/input/retail_db/products")
+	
+val departmentsMap = departments.map(rec => (rec.split(",")(0).toInt, rec.split(",")(1)))
+val categoriesMap = categories.map(rec => (rec.split(",")(0).toInt, rec.split(",")(1).toInt))
+val productsMap = products.map(rec => (rec.split(",")(1).toInt, rec.split(",")(0).toInt))
+
+departmentsMap.take(2)
+res3: Array[(Int, String)] = Array((2,Fitness), (3,Footwear))
+
+categoriesMap.take(2)
+res4: Array[(Int, Int)] = Array((1,2), (2,2))
+
+productsMap.take(2)
+res5: Array[(Int, Int)] = Array((2,1), (2,2))
+
+val productCategories = productsMap.join(categoriesMap)
+
+productCategories.take(2)
+res6: Array[(Int, (Int, Int))] = Array((34,(741,6)), (34,(742,6)))
+
+val productCategoriesMap = productCategories.map(rec => (rec._2._2, rec._2._1)) --> we are interested in only the values now in a separate order.
+
+productCategoriesMap.take(2)
+res7: Array[(Int, Int)] = Array((6,741), (6,742))
+
+val productDepartments = productCategoriesMap.join(departmentsMap)
+
+productDepartments.take(2)
+res8: Array[(Int, (Int, String))] = Array((4,(477,Apparel)), (4,(478,Apparel)))
+
+Build a HashMap and create a broadcast variable
+
+val productDepartmentsMap = productDepartments.map(rec => (rec._2._1, rec._2._2)).distinct
+
+productDepartmentsMap.take(2)
+res9: Array[(Int, String)] = Array((688,Outdoors), (307,Outdoors))
+
+val bv = sc.broadcast(productDepartmentsMap.collectAsMap())
+
+val orders = sc.textFile("/input/retail_db/orders")
+val orderItems = sc.textFile("/input/retail_db/order_items")
+
+Filter for completed orders and extract required fields from orders
+
+val ordersCompleted = orders.filter(rec => (rec.split(",")(3) == "COMPLETE")).map(rec => (rec.split(",")(0).toInt, rec.split(",")(1)))
+
+ordersCompleted.take(2)
+res1: Array[(Int, String)] = Array((3,2013-07-25 00:00:00.0), (5,2013-07-25 00:00:00.0))
+
+Extract required fields from order_items while looking up into hash map to get department name
+
+val orderItemsMap = orderItems.map(rec => (rec.split(",")(1).toInt, (bv.value.get(rec.split(",")(2).toInt).get, rec.split(",")(4).toFloat)))
+
+Join orders and order_items and compute daily revenue for each product
+
+val ordersJoin = ordersCompleted.join(orderItemsMap)
+
+ordersJoin.take(2)
+res2: Array[(Int, (String, (String, Float)))] = Array((65722,(2014-05-23 00:00:00.0,(Apparel,119.98))), (65722,(2014-05-23 00:00:00.0,(Outdoors,400.0))))
+
+
+
+val revenuePerDayPerDepartment = ordersJoin.map(rec => ((rec._2._1, rec._2._2._1), rec._2._2._2))
+
+revenuePerDayPerDepartment.take(2)
+res12: Array[((String, String), Float)] = Array(((2014-05-23 00:00:00.0,Apparel),119.98), ((2014-05-23 00:00:00.0,Outdoors),400.0))
+
+
+val indrevenue = revenuePerDayPerDepartment.reduceByKey((acc, value) => acc + value)
+
+indrevenue .sortByKey().take(10).foreach(println)
+((2013-07-25 00:00:00.0,Apparel),3279.5698)
+((2013-07-25 00:00:00.0,Fan Shop),9798.689)
+((2013-07-25 00:00:00.0,Fitness),394.93)
+((2013-07-25 00:00:00.0,Footwear),3899.61)
+((2013-07-25 00:00:00.0,Golf),2029.72)
+((2013-07-25 00:00:00.0,Outdoors),627.80005)
+((2013-07-26 00:00:00.0,Apparel),8828.75)
+((2013-07-26 00:00:00.0,Fan Shop),20847.686)
+((2013-07-26 00:00:00.0,Fitness),183.98001)
+((2013-07-26 00:00:00.0,Footwear),5129.42)
+
+

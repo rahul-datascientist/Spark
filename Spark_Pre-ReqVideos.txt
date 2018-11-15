@@ -1,0 +1,32 @@
+General
+
+Introducing Apache Spark Into Your Big Data Architecture:- https://www.youtube.com/watch?v=aKFnfSbNkm4
+
+Basic Scala Tutorial :-
+https://www.youtube.com/watch?v=DzFt0YkZo8M
+
+Why Scala :-
+https://www.youtube.com/watch?v=LH75sJAR0hc
+
+Python for Begineers :-
+https://www.youtube.com/watch?v=oy4GOI9vn5M
+
+What is Apache Spark :-
+https://www.youtube.com/watch?v=SxAxAhn-BDU
+
+Before Day 2 
+
+Optional: Introduction to Spark Internals
+https://www.youtube.com/watch?v=49Hr5xZyTEA
+
+Structured data processing with Spark SQL:
+https://www.youtube.com/watch?v=0jd3EWmKQfo
+
+Before Day 3
+
+ETL Is Dead, Long Live Streams w_ Apache Kafka
+https://www.youtube.com/watch?v=I32hmY4diFY
+
+Introduction to Spark Streaming
+https://www.youtube.com/watch?v=OFbClndwjps
+

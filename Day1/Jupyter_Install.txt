@@ -1,0 +1,52 @@
+Winscp - Options - Preferences - Transfer - Double Click on Default --> Change the Transfer Settings to Binary Radio Option.
+
+Drag and drop the Anaconda3-4.0.0-Linux-x86_64.sh to /home/notroot/downloads by ensuring that you are using the binary mode for transfer.
+
+1) in putty --> Install Anaconda from downloads dir--> bash Anaconda3-4.0.0-Linux-x86_64.sh
+
+Confirm that this line is added by the Anaconda Installer. This will be the last step in the installation process :-
+export PATH="/home/notroot/anaconda3/bin:$PATH"
+
+2) After the installation is complete, in .bashrc make changes and execute it via . .bashrc from /home/notroot directory
+
+export PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH 
+export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.9-src.zip:$PYTHONPATH
+
+4) check for --> conda --version
+5) conda install jupyter
+
+Putty Console to start the Notebook --> jupyter notebook --ip=TheVMIP
+
+Go to the browser to start the Notebook --> http://THEVMIP:8888
+
+	Click on the New DropDown and select Python3
+co
+In the cell that comes up, you can type 
+
+from pyspark import SparkContext
+sc =SparkContext()
+sc.master
+--> For executing you will press Shift + Enter
+
+If you see the result, we are all setup.
+
+
+
+
+
+
+
+
+
+
+
+To be done later on and only If you want to see a table created in Scala using Jupyter notebook then:-
+from pyspark.sql import HiveContext
+hive_context = HiveContext(sc)
+bank = hive_context.table("customer")
+bank.show()
+
+
+
+
+

@@ -1,0 +1,33 @@
+https://spark.apache.org/docs/1.6.2/programming-guide.html#accumulators
+
+It is important to perform some counts as part of application for
+        unit testing
+        data quality
+These counters cannot be global variables as part of the program and hence we need to use accumulator which will be managed by spark
+
+Accumulators will be passed to executors and scope is managed across all the executors or executor tasks
+
+Start with spark-shell --> we will test accumulators here
+
+val ordersRDD = sc.textFile("/input/retail_db/orders")
+
+ordersRDD.count()
+res0: Long = 68883
+
+
+val ordersCompletedAccum = sc.accumulator(0, "ordersCompleted count")
+val ordersAccum = sc.accumulator(0, "Total orders count")
+
+val ordersCompleted = ordersRDD.
+      filter(rec => {
+        ordersAccum += 1
+        if (rec.split(",")(3) == "COMPLETE") {
+          ordersCompletedAccum += 1
+        }
+        rec.split(",")(3) == "COMPLETE"
+      })
+ordersCompleted.count()
+res2: Long = 22899
+
+Check for the accumulators in the completed stages 
+

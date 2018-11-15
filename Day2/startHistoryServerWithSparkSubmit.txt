@@ -1,0 +1,18 @@
+
+A] Create a directory in HDFS for logging, say /sparkevents
+
+hdfs dfs -mkdir /sparkevents
+
+B] Write down these lines in spark-defaults.conf in the conf directory of spark after moving the template word from this file.
+
+spark.history.fs.logDirectory    hdfs://localhost:9000/sparkevents
+spark.eventLog.dir               hdfs://localhost:9000/sparkevents
+spark.eventLog.enabled           true
+
+C] from the spark/sbin dir --> ./start-history-server.sh
+
+D] Check with JPS is the HistoryServer daemon is running
+
+E] Execute the spark-submit command again.
+
+F] Then check with the IPADDRESS:18080 port no.

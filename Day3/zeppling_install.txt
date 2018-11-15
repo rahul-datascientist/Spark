@@ -1,0 +1,26 @@
+1) Copy the Zepplin software to /home/notroot/downloads and 
+extract the software to the /home/notroot/lab/software directory
+
+notroot@ubuntu:~/lab/software$ tar -xvf ../../downloads/zeppelin-0.6.0-bin-netinst.tgz
+
+
+2) edit the .bashrc and ensure that you source it after writing the following 2 lines.
+
+export ZEPPLIN_HOME=/home/notroot/lab/software/zeppelin-0.6.0-bin-netinst
+export PATH=$ZEPPLIN_HOME/bin:$PATH
+
+3) Save the file and execute . .bashrc in the putty to source the file.
+
+4) start the server
+zeppelin-daemon.sh start
+
+5) Then go the browser: IPADDRESS:8080
+
+Create New Note --> This will start with a new notebook
+
+Note: WE do not need to create sc as it is implicitly created
+
+sc.master --> shift enter and check if it gives local[*]
+
+For the intellisense --> Ctrl+.
+

@@ -1,0 +1,12 @@
+panama paper
+paradise papaer
+youtube spark submit videos
+
+
+
+
+kill process in unix if we are not able to kill with -9
+
+ps -ef |grep java
+
+search for defunc and kill the innternal

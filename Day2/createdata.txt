@@ -1,0 +1,3 @@
+df1 = sc.parallelize( [Row(cid='101', name='Alice', age=25, state='ca'),Row(cid='102', name='Bob', age=15, state='ny'),Row(cid='103', name='Bob', age=23, state='nc'), Row(cid='104', name='Ram', age=45, state='fl')]).toDF()
+
+df2 = sc.parallelize([Row(cid='101', date='2015-03-12', product='toaster', price=200),Row(cid='104', date='2015-04-12', product='iron', price=120),Row(cid='102', date='2014-12-31', product='fridge', price=850),Row(cid='102', date='2015-02-03', product='cup', price=5)]).toDF()

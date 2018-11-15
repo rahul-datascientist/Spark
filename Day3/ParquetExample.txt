@@ -1,0 +1,23 @@
+val cars = "/input/cars.json";
+val carDataFrame = sqlContext.read.format("json").load(cars);
+carDataFrame.show();
+
+carDataFrame.write.parquet("/input/cars.parquet")
+val parquetcarsDF = sqlContext.read.parquet("/input/cars.parquet")
+parquetcarsDF.show()
+parquetcarsDF.groupBy("speed").count().show()
+
+To check the actual size of the files try this: This is in Python
+
+txnrdd = sc.textFile("/input/txns")
+txnrddmap = txnrdd.map(lambda line : line.split(","))
+txnrddmap.take(10)
+txnDF = sqlContext.createDataFrame(txnrddmap,["txid","txdate","custid","amount","primproduct", "secproduct","city","state","cash_credit"])
+txnDF.printSchema()
+txnDF.groupBy("secproduct").count().show() --> Go to the 4040 and check how much time this process took.
+
+txnDF.write.parquet("/input/txns.parquet")
+==> after this go to the 50070 page no and check the size of the files 18 MB. The original size of txns was 176 Mb in bytes.
+
+parquettxnsDF = sqlContext.read.parquet("/input/txns.parquet")
+parquettxnsDF.groupBy("secproduct").count().show() --> go to the 4040 and check how much time this parquet groupBy took
