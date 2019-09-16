@@ -1,0 +1,68 @@
+Spark_Session_Different_Shell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cd /home/ec2-user/spark_install/spark
+
+./bin/spark-shell
+val textFile = spark.read.textFile("README.md")
+textFile.count()
+
+:q
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+./bin/pyspark
+
+textFile = spark.read.text("README.md")
+textFile.count()
+
+quit()
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+./bin/spark-sql
+
+
+
+create database sparksql;
+
+use sparksql;
+
+create table employees(name string,salary long) using json options(path 'examples/src/main/resources/employees.json');
+
+select * from employees;
+drop table employees;
+quit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+DataFrame_Introduction
+~~~~~~~~~~~~~~~~~~~~~~
+
+
+val people = spark.read.option("inferSchema","true").option("header","true").csv("/opt/spark/examples/src/main/resources/people.csv")
+
+people.count
+
+people.printSchema
+
+val retailDF = spark.read.option("inferSchema","true").option("header","true").csv("/opt/spark/examples/src/main/resources/Online_Retail.csv")
+val retailDF = spark.read.format("csv").option("inferSchema","true").option("header","true").load("/opt/spark/examples/src/main/resources/Online_Retail.csv")
+
+retailDF.printSchema
+
+retailDF.createOrReplaceTempView("RetailSales")
+
+
+spark.sql("select Description, count(StockCode) as ItemFrequency from RetailSales where UnitPrice > 0  group by Description order by ItemFrequency desc limit 20").show()
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+pyspark
+
+retailDF = spark.read.option("inferSchema","true").option("header","true").csv("/root/data/Online_Retail.csv")
+
+retailDF.createOrReplaceTempView("RetailSales")
+spark.sql("select Description, count(StockCode) as ItemFrequency from RetailSales where UnitPrice > 0  group by Description order by ItemFrequency desc limit 20").show()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+retailDF.rdd.getNumPartitions
+
